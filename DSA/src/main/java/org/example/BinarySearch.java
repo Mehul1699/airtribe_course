@@ -65,6 +65,10 @@ public class BinarySearch {
         System.out.println("The insert position for target: " + tar + " is: " + searchInsertPosition(nums4, tar));
          */
 
+        int[] arr4 = {1, 2, 8, 10, 10, 12, 19};
+        int x = 11;
+        System.out.println("Floor for x: " + x + " is: " + findFloor(arr4, x));
+
 //        RSA
         /*
 //        Leetcode question 153 - Find Minimum in Sorted Rotated Array
@@ -77,10 +81,12 @@ public class BinarySearch {
         System.out.println("Number of rotations in RSA: " + numberOfRotations(rotatedArray));
          */
 
+        /*
         // Leetcode question 33 - Search in Rotated Sorted Array
         int[] numsArray2 = {4, 5, 6, 7, 0, 1, 2};
         int rsaTarget = 0;
         System.out.println("The index of target: " + rsaTarget + " is: " + searchInRSA(numsArray2, rsaTarget));
+         */
     }
 
 
@@ -107,7 +113,7 @@ public class BinarySearch {
         int r = n - 1;
         while (l <= r) {
             int mid = (l + r) / 2;
-            if (arr[mid] == target && (mid == n - 1 || arr[mid] != target)) {
+            if (arr[mid] == target && (mid == n - 1 || arr[mid + 1] != target)) {
                 return mid;
             } else if (arr[mid] > target) {
                 r = mid - 1;
@@ -132,6 +138,24 @@ public class BinarySearch {
             }
         }
         return l;
+    }
+
+    // Geeks for Geeks - Floor in a sorted array
+    public static int findFloor(int[] arr, int x) {
+        int n = arr.length;
+        int l = 0;
+        int r = n - 1;
+        int answer = -1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (arr[mid] <= x) {
+                answer = mid;
+                l = mid + 1;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return answer;
     }
 
     // RSA
