@@ -1,8 +1,6 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.*;
 
 public class StackDSA {
 
@@ -320,6 +318,183 @@ public class StackDSA {
         System.out.println("Top Element: " + stack.peek());
     }
 
+    // Assignment questions
+
+
+    // Reverse a string using stack
+    static String reverse(String str) {
+        // code here
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < str.length(); i++) {
+            stack.push(str.charAt(i));
+        }
+        StringBuilder s = new StringBuilder();
+        while (!stack.isEmpty()) {
+            s.append(stack.peek());
+            stack.pop();
+        }
+        return s.toString();
+    }
+
+
+    // Leetcode - Medium Q.856 - Score of Parentheses
+
+    /**
+     * Given a balanced parentheses string s, return the score of the string.
+     * <p>
+     * The score of a balanced parentheses string is based on the following rule:
+     * <p>
+     * "()" has score 1.
+     * AB has score A + B, where A and B are balanced parentheses strings.
+     * (A) has score 2 * A, where A is a balanced parentheses string.
+     * <p>
+     * <p>
+     * Example 1:
+     * Input: s = "()"
+     * Output: 1
+     * <p>
+     * Example 2:
+     * Input: s = "(())"
+     * Output: 2
+     * <p>
+     * Example 3:
+     * Input: s = "()()"
+     * Output: 2
+     *
+     */
+
+    static int scoreOfParenthesis(String s) {
+        Stack<Integer> stack = new Stack<>();
+        int ans = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.push(0);
+            } else {
+                if (stack.peek() == 0) {
+                    stack.pop();
+                    stack.push(1);
+                } else {
+                    int sum = 0;
+                    while (stack.peek() != 0) {
+                        sum += stack.pop();
+                    }
+                    stack.pop();
+                    stack.push(Math.max(2 * sum, 1)); // 2*sum for nested parenthesis and 1 in case ()
+                }
+            }
+        }
+        while (!stack.isEmpty()) {
+            ans += stack.pop();
+        }
+        return ans;
+    }
+
+    // Leetcode - Medium - 150. Evaluate Reverse Polish Notation
+    static int reversePolishNotation(String[] tokens) {
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < tokens.length; i++) {
+            if (!tokens[i].equals("+") && !tokens[i].equals("-") && !tokens[i].equals("/") && !tokens[i].equals("*")) {
+                stack.push(Integer.parseInt(tokens[i]));
+            } else {
+                int a = stack.pop();
+                int b = stack.pop();
+                switch (tokens[i]) {
+                    case "+" -> stack.push(b + a);
+                    case "-" -> stack.push(b - a);
+                    case "*" -> stack.push(b * a);
+                    case "/" -> stack.push(b / a);
+                }
+            }
+        }
+        return stack.pop();
+    }
+
+    // Leetcode - 496. Next Greater Element 1
+
+    /**
+     * The next greater element of some element x in an array is the first greater element that is to the right of x in the same array.
+     * You are given two distinct 0-indexed integer arrays nums1 and nums2, where nums1 is a subset of nums2.
+     * For each 0 <= i < nums1.length, find the index j such that nums1[i] == nums2[j] and determine the next greater element of nums2[j] in nums2.
+     * If there is no next greater element, then the answer for this query is -1.
+     * Return an array ans of length nums1.length such that ans[i] is the next greater element as described above.
+     * <p>
+     * <p>
+     * <p>
+     * Example 1:
+     * Input: nums1 = [4,1,2], nums2 = [1,3,4,2]
+     * Output: [-1,3,-1]
+     * Explanation: The next greater element for each value of nums1 is as follows:
+     * - 4 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
+     * - 1 is underlined in nums2 = [1,3,4,2]. The next greater element is 3.
+     * - 2 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
+     * <p>
+     * Example 2:
+     * Input: nums1 = [2,4], nums2 = [1,2,3,4]
+     * Output: [3,-1]
+     * Explanation: The next greater element for each value of nums1 is as follows:
+     * - 2 is underlined in nums2 = [1,2,3,4]. The next greater element is 3.
+     * - 4 is underlined in nums2 = [1,2,3,4]. There is no next greater element, so the answer is -1.
+     */
+
+    static int[] nextGreater1(int[] nums1, int[] nums2) {
+        Stack<Integer> stack = new Stack<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = nums2.length - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && stack.peek() <= nums2[i]) {
+                stack.pop();
+            }
+            if (stack.isEmpty()) {
+                map.put(nums2[i], -1);
+            } else {
+                map.put(nums2[i], stack.peek());
+            }
+            stack.push(nums2[i]);
+        }
+
+        for (int i = 0; i < nums1.length; i++) {
+            nums1[i] = map.get(nums1[i]);
+        }
+        return nums1;
+    }
+
+    // Leetcode - Medium - 503. Next Greater Element II
+
+    /**
+     * Given a circular integer array nums (i.e., the next element of nums[nums.length - 1] is nums[0]), return the next greater number for every element in nums.
+     * <p>
+     * The next greater number of a number x is the first greater number to its traversing-order next in the array, which means you could search circularly
+     * to find its next greater number. If it doesn't exist, return -1 for this number.
+     * <p>
+     * Example 1:
+     * Input: nums = [1,2,1]
+     * Output: [2,-1,2]
+     * Explanation: The first 1's next greater number is 2;
+     * The number 2 can't find next greater number.
+     * The second 1's next greater number needs to search circularly, which is also 2.
+     * <p>
+     * Example 2:
+     * Input: nums = [1,2,3,4,3]
+     * Output: [2,3,4,-1,4]
+     */
+    static int[] nextGreater2(int[] arr) {
+        Stack<Integer> stack = new Stack<>();
+        int n = arr.length;
+        int[] ans = new int[n];
+        for (int i = (2 * n) - 1; i >= 0; i--) {  // Using 2*n because we need to run circular loop
+            // Whenever you need the actual element, use: nums[i % n]
+            while (!stack.isEmpty() && arr[i % n] >= arr[stack.peek() % n]) {
+                stack.pop();
+            }
+            if (stack.isEmpty()) {
+                ans[i%n] = -1;
+            } else {
+                ans[i%n] = arr[stack.peek() % n];
+            }
+            stack.push(i);
+        }
+        return ans;
+    }
+
     static void main() {
         /*
         runStack();
@@ -355,7 +530,33 @@ public class StackDSA {
         System.out.println("Stock span of stock: " + Arrays.toString(stock) + " is: " + stockSpan(stock));
          */
 
+        /*
         System.out.println("Largest Rectangle: " + largestRectangleArea(new int[]{2, 1, 5, 6, 2, 3}));
+         */
+
+        /*
+        String s = "GeeksForGeeks";
+        System.out.println("Reverse of string: " + s + " is: " + reverse(s));
+         */
+
+        /*
+        String para = "(()(()))";  // 6 -> () = 1 => (()) = 2 => 1+2 = 3 => (3) outer parenthesis => 3*2 = 6
+        System.out.println("Score of parenthesis string: " + para + " is: " + scoreOfParenthesis(para));
+         */
+
+        /*
+        String[] tokens = {"10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"};  // 22
+        System.out.println("Reverse polish notation of: " + Arrays.toString(tokens) + " is: " + reversePolishNotation(tokens));
+         */
+
+        /*
+        int[] nums1 = {4, 1, 2};
+        int[] nums2 = {1, 3, 4, 2};
+        System.out.println("Next greater of : " + Arrays.toString(nums1) + " in: " + Arrays.toString(nums1) + " is: " + Arrays.toString(nextGreater1(nums1, nums2)));
+         */
+
+        int[] nums3 = {1, 2, 3, 4, 3};
+        System.out.println("Next greater 2 of: " + Arrays.toString(nums3) + " is: " + Arrays.toString(nextGreater2(nums3)));
     }
 
 }
