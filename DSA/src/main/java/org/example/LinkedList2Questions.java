@@ -324,6 +324,120 @@ public class LinkedList2Questions {
         tailNode.prev = headNode;
     }
 
+    private static class NodeR {
+        int val;
+        NodeR next;
+        NodeR random;
+
+        @Override
+        public String toString() {
+            return "NodeR{" +
+                    "val=" + val +
+                    ", next=" + next +
+                    ", random=" + random +
+                    '}';
+        }
+
+        NodeR(int val, NodeR node, NodeR random) {
+            this.val = val;
+            this.next = node;
+            this.random = random;
+        }
+
+        NodeR(int val) {
+            this.val = val;
+        }
+    }
+
+    // Leetcode - Medium - 138. Copy List with Random Pointer
+
+    /**
+     * A linked list of length n is given such that each node contains an additional random pointer,
+     * which could point to any node in the list, or null.
+     * <p>
+     * Construct a deep copy of the list. The deep copy should consist of exactly n brand new nodes,
+     * where each new node has its value set to the value of its corresponding original node.
+     * Both the next and random pointer of the new nodes should point to new nodes in the copied
+     * list such that the pointers in the original list and copied list represent the same list state.
+     * None of the pointers in the new list should point to nodes in the original list.
+     * <p>
+     * For example, if there are two nodes X and Y in the original list, where X.random --> Y,
+     * then for the corresponding two nodes x and y in the copied list, x.random --> y.
+     * <p>
+     * Return the head of the copied linked list.
+     * <p>
+     * The linked list is represented in the input/output as a list of n nodes.
+     * Each node is represented as a pair of [val, random_index] where:
+     * <p>
+     * val: an integer representing Node.val
+     * random_index: the index of the node (range from 0 to n-1) that the random pointer points to,
+     * or null if it does not point to any node.
+     * Your code will only be given the head of the original linked list.
+     * <p>
+     * Example 1:
+     * Input: head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+     * Output: [[7,null],[13,0],[11,4],[10,2],[1,0]]
+     * <p>
+     * Example 2:
+     * Input: head = [[1,1],[2,1]]
+     * Output: [[1,1],[2,1]]
+     * <p>
+     * Example 3:
+     * Input: head = [[3,null],[3,0],[3,null]]
+     * Output: [[3,null],[3,0],[3,null]]
+     */
+    static NodeR copyRandomList(NodeR head) {
+        // Step1: Create dummy nodes
+        createDummyNodes(head);
+
+        // Step2: Set Random nodes
+        setRandomNodes(head);
+
+        // Step3: Fetch the copy
+        return createAndReturnCopy(head);
+    }
+
+    static void createDummyNodes(NodeR head) {
+        NodeR temp = head;
+        while (temp != null) {
+            NodeR dummy = new NodeR(temp.val);
+            NodeR future = temp.next;
+            temp.next = dummy;
+            dummy.next = future;
+            temp = future;
+        }
+    }
+
+    static void setRandomNodes(NodeR head) {
+        NodeR temp = head;
+        while (temp != null) {
+            if (temp.random != null) {
+                temp.next.random = temp.random.next;
+            }
+            temp = temp.next.next;
+        }
+    }
+
+    static NodeR createAndReturnCopy(NodeR head) {
+        NodeR tHead = new NodeR(-1);
+        NodeR tTail = tHead;
+        while (head != null) {
+            tTail.next = head.next;
+            head.next = head.next.next;
+            tTail = tTail.next;
+            head = head.next;
+        }
+        return tHead.next;
+    }
+
+    private static void printLL(NodeR head) {
+        while (head != null) {
+//            System.out.println(head.val);
+            System.out.println(head.val + ", " + (head.random != null ? head.random.val : null));
+            head = head.next;
+        }
+    }
+
     static void main() {
         /*
         Node a = new Node(2);
@@ -425,6 +539,7 @@ public class LinkedList2Questions {
         System.out.println();
          */
 
+        /*
         LRUCache(2);
         put(1, 1);
         System.out.println(hm.toString());
@@ -444,6 +559,27 @@ public class LinkedList2Questions {
         System.out.println(hm);
         System.out.println("Getting 4 : " + get(4));
         System.out.println(hm);
+         */
+        // [[7,null],[13,0],[11,4],[10,2],[1,0]]
+        NodeR nnr1 = new NodeR(7);
+        NodeR nnr2 = new NodeR(13);
+        NodeR nnr3 = new NodeR(11);
+        NodeR nnr4 = new NodeR(10);
+        NodeR nnr5 = new NodeR(1);
+        nnr1.next = nnr2;
+        nnr1.random = null;
+        nnr2.next = nnr3;
+        nnr2.random = nnr1;
+        nnr3.next = nnr4;
+        nnr3.random = nnr4;
+        nnr4.next = nnr5;
+        nnr4.random = nnr1;
+        System.out.println("Initial linked list: ");
+        printLL(nnr1);
+        System.out.println();
+        NodeR newHead = copyRandomList(nnr1);
+        System.out.println("After copying: ");
+        printLL(newHead);
 
     }
 }
